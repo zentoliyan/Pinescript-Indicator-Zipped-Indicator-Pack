@@ -70,3 +70,87 @@ hline(show_macd ? 0 : na, "Zero Line", color=color.new(#787B86, 50))
 plot(show_macd ? hist : na, title="Histogram", style=plot.style_columns, color=(hist>=0 ? (hist[1] < hist ? col_grow_above : col_fall_above) : (hist[1] < hist ? col_grow_below : col_fall_below)))
 plot(show_macd ? macd : na, title="MACD", color=col_macd)
 plot(show_macd ? signal : na, title="Signal", color=col_signal)
+
+// ====================================================================================================================================================================================
+
+source_for_moving_averages = close
+
+// Ekranımızda yer alacak birinci MA için hesaplamaların yapıldığı ksım.
+// This is where the calculations for the first moving average (MA) that will appear on our screen are performed.
+
+ma1(source_for_moving_averages, length, type) =>
+    switch type
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
+
+maTypeInput1 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
+maLengthInput1 = input.int(9, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
+
+// Ekranımızda yer alacak ikinci MA için hesaplamaların yapıldığı ksım.
+// This is where the calculations for the second moving average (MA) that will appear on our screen are performed.
+
+ma2(source_for_moving_averages, length, type) =>
+    switch type
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
+
+maTypeInput2 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
+maLengthInput2 = input.int(20, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
+
+// Ekranımızda yer alacak üçüncü MA için hesaplamaların yapıldığı ksım.
+// This is where the calculations for the third moving average (MA) that will appear on our screen are performed.
+
+ma3(source_for_moving_averages, length, type) =>
+    switch type
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
+
+maTypeInput3 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
+maLengthInput3 = input.int(50, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
+
+// Ekranımızda yer alacak dördüncü MA için hesaplamaların yapıldığı ksım.
+// This is where the calculations for the fourth moving average (MA) that will appear on our screen are performed.
+
+ma4(source_for_moving_averages, length, type) =>
+    switch type
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
+
+maTypeInput4 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
+maLengthInput4 = input.int(100, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
+
+// Ekranımızda yer alacak beşinci MA için hesaplamaların yapıldığı ksım.
+// This is where the calculations for the fifth moving average (MA) that will appear on our screen are performed.
+
+ma5(source_for_moving_averages, length, type) =>
+    switch type
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
+
+maTypeInput5 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
+maLengthInput5 = input.int(200, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
+
+// Hareketli ortalamaların grafik üzerinde çizildiği kısım.
+// This is the section where the moving averages are plotted on the chart.
+
+maline1 = ma1(source_for_moving_averages, maLengthInput1, maTypeInput1)
+maline2 = ma2(source_for_moving_averages, maLengthInput2, maTypeInput2)
+maline3 = ma3(source_for_moving_averages, maLengthInput3, maTypeInput3)
+maline4 = ma4(source_for_moving_averages, maLengthInput4, maTypeInput4)
+maline5 = ma5(source_for_moving_averages, maLengthInput5, maTypeInput5)
+
+plot(maline1, title='Birinci MA Çizgisi / First MA Line', color=color.new(color.yellow, 0), linewidth=1, display = display.pane)
+plot(maline2, title='İkinci MA Çizgisi / Second MA Line', color=color.new(color.white, 0), linewidth=1, display = display.pane)
+plot(maline3, title='Üçüncü MA Çizgisi / Third MA Line', color=color.new(color.blue, 0), linewidth=1, display = display.pane)
+plot(maline4, title='Dördüncü MA Çizgisi / Fourth MA Line', color=color.new(color.red, 0), linewidth=1, display = display.pane)
+plot(maline5, title='Beşinci MA Çizgisi / Fifth MA Line', color=color.new(color.orange, 0), linewidth=1, display = display.pane)
