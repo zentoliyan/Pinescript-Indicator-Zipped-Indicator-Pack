@@ -6,6 +6,11 @@ indicator("Sıkıştırılmış İndikatör Paketi")
 
 show_rsi  = input(false)
 show_macd = input(false)
+show_ma1  = input(false)
+show_ma2  = input(false)
+show_ma3  = input(false)
+show_ma4  = input(false)
+show_ma5  = input(false)
 
 ma(source, length, type) =>
     switch type
@@ -88,9 +93,6 @@ ma1(source_for_moving_averages, length, type) =>
 maTypeInput1 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
 maLengthInput1 = input.int(9, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
 
-// Ekranımızda yer alacak ikinci MA için hesaplamaların yapıldığı ksım.
-// This is where the calculations for the second moving average (MA) that will appear on our screen are performed.
-
 ma2(source_for_moving_averages, length, type) =>
     switch type
         "WMA" => ta.wma(source_for_moving_averages, length)
@@ -100,9 +102,6 @@ ma2(source_for_moving_averages, length, type) =>
 
 maTypeInput2 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
 maLengthInput2 = input.int(20, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
-
-// Ekranımızda yer alacak üçüncü MA için hesaplamaların yapıldığı ksım.
-// This is where the calculations for the third moving average (MA) that will appear on our screen are performed.
 
 ma3(source_for_moving_averages, length, type) =>
     switch type
@@ -114,9 +113,6 @@ ma3(source_for_moving_averages, length, type) =>
 maTypeInput3 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
 maLengthInput3 = input.int(50, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
 
-// Ekranımızda yer alacak dördüncü MA için hesaplamaların yapıldığı ksım.
-// This is where the calculations for the fourth moving average (MA) that will appear on our screen are performed.
-
 ma4(source_for_moving_averages, length, type) =>
     switch type
         "WMA" => ta.wma(source_for_moving_averages, length)
@@ -126,9 +122,6 @@ ma4(source_for_moving_averages, length, type) =>
 
 maTypeInput4 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
 maLengthInput4 = input.int(100, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
-
-// Ekranımızda yer alacak beşinci MA için hesaplamaların yapıldığı ksım.
-// This is where the calculations for the fifth moving average (MA) that will appear on our screen are performed.
 
 ma5(source_for_moving_averages, length, type) =>
     switch type
@@ -140,17 +133,17 @@ ma5(source_for_moving_averages, length, type) =>
 maTypeInput5 = input.string("EMA", title="MA Türü / MA Type", options=["WMA","EMA","SMA","VWMA"], group="MA Ayarları / MA Settings")
 maLengthInput5 = input.int(200, title="MA Periyodu / MA Period", group="MA Ayarları / MA Settings")
 
-// Hareketli ortalamaların grafik üzerinde çizildiği kısım.
-// This is the section where the moving averages are plotted on the chart.
-
 maline1 = ma1(source_for_moving_averages, maLengthInput1, maTypeInput1)
 maline2 = ma2(source_for_moving_averages, maLengthInput2, maTypeInput2)
 maline3 = ma3(source_for_moving_averages, maLengthInput3, maTypeInput3)
 maline4 = ma4(source_for_moving_averages, maLengthInput4, maTypeInput4)
 maline5 = ma5(source_for_moving_averages, maLengthInput5, maTypeInput5)
 
-plot(maline1, title='Birinci MA Çizgisi / First MA Line', color=color.new(color.yellow, 0), linewidth=1, display = display.pane)
-plot(maline2, title='İkinci MA Çizgisi / Second MA Line', color=color.new(color.white, 0), linewidth=1, display = display.pane)
-plot(maline3, title='Üçüncü MA Çizgisi / Third MA Line', color=color.new(color.blue, 0), linewidth=1, display = display.pane)
-plot(maline4, title='Dördüncü MA Çizgisi / Fourth MA Line', color=color.new(color.red, 0), linewidth=1, display = display.pane)
-plot(maline5, title='Beşinci MA Çizgisi / Fifth MA Line', color=color.new(color.orange, 0), linewidth=1, display = display.pane)
+plot(show_ma1 ? maline1 : na, title='Birinci MA Çizgisi / First MA Line', color=color.new(color.yellow, 0), linewidth=1, display = display.pane)
+plot(show_ma2 ? maline2 : na, title='İkinci MA Çizgisi / Second MA Line', color=color.new(color.white, 0), linewidth=1, display = display.pane)
+plot(show_ma3 ? maline3 : na, title='Üçüncü MA Çizgisi / Third MA Line', color=color.new(color.blue, 0), linewidth=1, display = display.pane)
+plot(show_ma4 ? maline4 : na, title='Dördüncü MA Çizgisi / Fourth MA Line', color=color.new(color.red, 0), linewidth=1, display = display.pane)
+plot(show_ma5 ? maline5 : na, title='Beşinci MA Çizgisi / Fifth MA Line', color=color.new(color.orange, 0), linewidth=1, display = display.pane)
+
+// ====================================================================================================================================================================================
+
