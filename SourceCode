@@ -146,4 +146,3 @@ plot(show_ma4 ? maline4 : na, title='Dördüncü MA Çizgisi / Fourth MA Line', 
 plot(show_ma5 ? maline5 : na, title='Beşinci MA Çizgisi / Fifth MA Line', color=color.new(color.orange, 0), linewidth=1, display = display.pane)
 
 // ====================================================================================================================================================================================
-
