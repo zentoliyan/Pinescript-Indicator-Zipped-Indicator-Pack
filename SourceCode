@@ -45,7 +45,7 @@ ma(source, length, type) =>
         "VWMA" => ta.vwma(source, length)
 
 rsiLengthInput = input.int(14, minval=1, title="RSI Length", group=rsi_group)
-rsiSourceInput = input.source(close, "Source", group="RSI Settings")
+rsiSourceInput = input.source(close, "Source", group=rsi_group)
 maTypeInput    = input.string("SMA", title="MA Type", options=["SMA", "Bollinger Bands", "EMA", "SMMA (RMA)", "WMA", "VWMA"], group=rsi_group)
 maLengthInput  = input.int(14, title="MA Length", group=rsi_group)
 bbMultInput    = input.float(2.0, minval=0.001, maxval=50, title="BB StdDev", group=rsi_group)
