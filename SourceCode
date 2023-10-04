@@ -31,6 +31,7 @@ vol_group       = "Hacim Ayarları"
 stoch_group     = "Stokastik Ayarları"
 stoch_rsi_group = "Stokastrik RSI Ayarları"
 adx_group       = "ADX Ayarları"
+dmi_group       = "DMI Ayarları"
 cci_group       = "CCI ayarları"
 mom_group       = "Momentum Ayarları"
 
@@ -328,8 +329,8 @@ plot_rott = plot(show_rott ? ott : na,         color= color.rgb(217, 0, 255), ti
 
 // ====================================================================================================================================================================================
 
-lensig_dmi = input.int(14, title="ADX Smoothing", minval=1, maxval=50)
-len_dmi    = input.int(14, minval=1, title="DI Length")
+lensig_dmi = input.int(14, title="ADX Smoothing", minval=1, maxval=50, group = dmi_group)
+len_dmi    = input.int(14, minval=1, title="DI Length", group = dmi_group)
 up_dmi     = ta.change(high)
 down_dmi   = -ta.change(low)
 plusDM     = na(up) ? na : (up > down and up > 0 ? up : 0)
