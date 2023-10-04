@@ -24,14 +24,14 @@ show_ma5       = input(false, title = "MA5", inline = "MA")
 
 // ====================================================================================================================================================================================
 
-rsi_group = "RSI Ayarları"
-macd_group = "MACD Ayarları"
-vol_group = "Hacim Ayarları"
-stoch_group = "Stokastik Ayarları"
+rsi_group       = "RSI Ayarları"
+macd_group      = "MACD Ayarları"
+vol_group       = "Hacim Ayarları"
+stoch_group     = "Stokastik Ayarları"
 stoch_rsi_group = "Stokastrik RSI Ayarları"
-adx_group = "ADX Ayarları"
-cci_group = "CCI ayarları"
-mom_group = "Momentum Ayarları"
+adx_group       = "ADX Ayarları"
+cci_group       = "CCI ayarları"
+mom_group       = "Momentum Ayarları"
 
 // ====================================================================================================================================================================================
 
