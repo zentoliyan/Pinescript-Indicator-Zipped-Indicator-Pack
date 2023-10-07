@@ -409,10 +409,10 @@ maline3 = ma3(source_for_moving_averages, maLengthInput3, maTypeInput3)
 maline4 = ma4(source_for_moving_averages, maLengthInput4, maTypeInput4)
 maline5 = ma5(source_for_moving_averages, maLengthInput5, maTypeInput5)
 
-plot(show_ma1 ? maline1 : na, title='Birinci MA Çizgisi / First MA Line',   color=color.new(color.yellow, 0), linewidth=ma1_linewidth)
-plot(show_ma2 ? maline2 : na, title='İkinci MA Çizgisi / Second MA Line',   color=color.new(color.white, 0),  linewidth=ma2_linewidth)
-plot(show_ma3 ? maline3 : na, title='Üçüncü MA Çizgisi / Third MA Line',    color=color.new(color.blue, 0),   linewidth=ma3_linewidth)
-plot(show_ma4 ? maline4 : na, title='Dördüncü MA Çizgisi / Fourth MA Line', color=color.new(color.red, 0),    linewidth=ma4_linewidth)
-plot(show_ma5 ? maline5 : na, title='Beşinci MA Çizgisi / Fifth MA Line',   color=color.new(color.orange, 0), linewidth=ma1_linewidth)
+plot(show_ma1 ? maline1 : na, title="Birinci MA Çizgisi",  color=color.new(color.yellow, 0), linewidth=ma1_linewidth)
+plot(show_ma2 ? maline2 : na, title="İkinci MA Çizgisi",   color=color.new(color.white, 0),  linewidth=ma2_linewidth)
+plot(show_ma3 ? maline3 : na, title="Üçüncü MA Çizgisi",   color=color.new(color.blue, 0),   linewidth=ma3_linewidth)
+plot(show_ma4 ? maline4 : na, title="Dördüncü MA Çizgisi", color=color.new(color.red, 0),    linewidth=ma4_linewidth)
+plot(show_ma5 ? maline5 : na, title="Beşinci MA Çizgisi",  color=color.new(color.orange, 0), linewidth=ma1_linewidth)
 
 // ====================================================================================================================================================================================
