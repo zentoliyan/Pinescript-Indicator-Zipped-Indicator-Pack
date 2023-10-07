@@ -17,6 +17,7 @@ show_cci       = input(false, title = "CCI")
 show_mom       = input(false, title = "Momentum")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
+show_mfi       = input(false, title = "MFI")
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
 show_ma3       = input(false, title = "MA3", inline = "MA")
@@ -34,6 +35,7 @@ adx_group       = "ADX Ayarları"
 dmi_group       = "DMI Ayarları"
 cci_group       = "CCI ayarları"
 mom_group       = "Momentum Ayarları"
+mfi_group       = "MFI Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -275,6 +277,19 @@ adx        = 100 * ta.rma(math.abs(plus - minus) / (sum == 0 ? 1 : sum), lensig_
 plot(show_dmi ? adx   : na, color=#F50057, title="ADX")
 plot(show_dmi ? plus  : na, color=#2962FF, title="+DI")
 plot(show_dmi ? minus : na, color=#FF6D00, title="-DI")
+
+// ====================================================================================================================================================================================
+
+length_mfi = input.int(title="Length", defval=14, minval=1, maxval=2000, group = mfi_group)
+src_mfi    = hlc3
+mf_mfi     = ta.mfi(src_mfi, length_mfi)
+
+overbought_mfi = hline(show_mfi ? 80 : na, title="Overbought", color=#787B86)
+oversold_mfi   = hline(show_mfi ? 20 : na, title="Oversold", color=#787B86)
+
+plot(show_mfi ? mf_mfi : na, "MF", color=#7E57C2)
+hline(show_mfi ? 50 : na, "Middle Band", color=color.new(#787B86, 50))
+fill(overbought_mfi, oversold_mfi, color=color.rgb(126, 87, 194, 90), title="Background")
 
 // ====================================================================================================================================================================================
 
