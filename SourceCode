@@ -18,6 +18,9 @@ show_mom       = input(false, title = "Momentum")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_mfi       = input(false, title = "MFI")
+show_bbp       = input(false, title = "BBP")
+show_efsun     = input(false, title = "EFSUN")
+
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
 show_ma3       = input(false, title = "MA3", inline = "MA")
@@ -36,6 +39,8 @@ dmi_group       = "DMI Ayarları"
 cci_group       = "CCI ayarları"
 mom_group       = "Momentum Ayarları"
 mfi_group       = "MFI Ayarları"
+bbp_group       = "BBP Ayarları"
+efsun_group     = "EFSUN Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -258,7 +263,48 @@ bar_cond0 = ta.barssince(ta.crossover(perfect_ma2 , ott))
 bar_cond1 = ta.barssince(ta.crossover(ott , perfect_ma2))
 
 plot_rott_support = plot(show_rott ? perfect_ma2 : na, color= color.new(#31e7ff, 0),  title="SUPPORT")
-plot_rott = plot(show_rott ? ott : na,         color= color.rgb(217, 0, 255), title="ROTT")
+plot_rott = plot(show_rott ? ott : na,                 color= color.rgb(217, 0, 255), title="ROTT")
+
+// ====================================================================================================================================================================================
+
+variable1 = input(10,        title="MA Periyodu",   group=efsun_group)
+float variable2 = input(0.5, title="Takip Yüzdesi", group=efsun_group)
+ab = 2/(variable1+1)
+
+var float cd = na
+var float[] hourlyData = array.new_float()
+
+isLessThan1Hour = timeframe.isminutes and timeframe.multiplier < 61
+
+updateHourlyData() =>
+    if isLessThan1Hour
+        array.unshift(hourlyData, ta.ema(close, variable1))
+
+calculateCD() =>
+    isLessThan1Hour ? array.get(hourlyData, 0) : ta.ema(close, 10)
+
+updateHourlyData()
+cd := calculateCD()
+
+avg0 = ta.ema(close , variable1)
+
+avg1 = avg0 - (avg0 * variable2 / 100)
+avg2 = avg0 + (avg0 * variable2 / 100)
+
+var float line1 = na
+var float line2 = na
+
+line1 := na(line1[1]) ? avg1 : (avg0 < line1[1] ? avg1 : (avg1 > line1[1] ? avg1 : line1[1]))
+line2 := na(line2[1]) ? avg2 : (avg0 > line2[1] ? avg2 : (avg2 < line2[1] ? avg2 : line2[1]))
+
+cond1 = ta.crossover(avg0, line2[1])
+cond2 = ta.crossunder(line1[1], avg0)
+
+s1 = ta.barssince(cond1) < ta.barssince(cond2)
+s2 = s1 ? line1 : line2
+
+p1 = plot(show_efsun ? s2 : na, "MOST",    color=color.yellow, linewidth = 2)
+p2 = plot(show_efsun ? avg0 : na, "ExMov", color=color.white, linewidth = 2)
 
 // ====================================================================================================================================================================================
 
@@ -290,6 +336,13 @@ oversold_mfi   = hline(show_mfi ? 20 : na, title="Oversold", color=#787B86)
 plot(show_mfi ? mf_mfi : na, "MF", color=#7E57C2)
 hline(show_mfi ? 50 : na, "Middle Band", color=color.new(#787B86, 50))
 fill(overbought_mfi, oversold_mfi, color=color.rgb(126, 87, 194, 90), title="Background")
+
+// ====================================================================================================================================================================================
+
+lengthInput = input.int(13, title="Length", group = bbp_group)
+bullPower   = high - ta.ema(close, lengthInput)
+bearPower   = low - ta.ema(close, lengthInput)
+plot(show_bbp ? (bullPower + bearPower) : na, title="BBPower")
 
 // ====================================================================================================================================================================================
 
