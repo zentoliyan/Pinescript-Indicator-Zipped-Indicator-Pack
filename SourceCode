@@ -19,8 +19,8 @@ show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_mfi       = input(false, title = "MFI")
 show_bbp       = input(false, title = "BBP")
+show_cmf       = input(false, title = "CMF")
 show_efsun     = input(false, title = "EFSUN")
-
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
 show_ma3       = input(false, title = "MA3", inline = "MA")
@@ -40,6 +40,7 @@ cci_group       = "CCI ayarları"
 mom_group       = "Momentum Ayarları"
 mfi_group       = "MFI Ayarları"
 bbp_group       = "BBP Ayarları"
+cmf_group       = "CMF Ayarları"
 efsun_group     = "EFSUN Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
@@ -343,6 +344,18 @@ lengthInput = input.int(13, title="Length", group = bbp_group)
 bullPower   = high - ta.ema(close, lengthInput)
 bearPower   = low - ta.ema(close, lengthInput)
 plot(show_bbp ? (bullPower + bearPower) : na, title="BBPower")
+
+// ====================================================================================================================================================================================
+
+var cumVol = 0.
+cumVol += nz(volume)
+if barstate.islast and cumVol == 0
+    runtime.error("No volume is provided by the data vendor.")
+length = input.int(20, minval=1, group = cmf_group)
+ad = close==high and close==low or high==low ? 0 : ((2*close-low-high)/(high-low))*volume
+mf = math.sum(ad, length) / math.sum(volume, length)
+plot(show_cmf ? mf : na, color=#43A047, title="MF")
+hline(show_cmf ? 0 : na, color=#787B86, title="Zero", linestyle=hline.style_dashed)
 
 // ====================================================================================================================================================================================
 
