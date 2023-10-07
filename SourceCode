@@ -12,6 +12,7 @@ show_vol       = input(false, title = "Hacim")
 show_stoch     = input(false, title = "Stokastik")
 show_stoch_rsi = input(false, title = "Stokastik RSI")
 show_adx       = input(false, title = "ADX")
+show_dmi       = input(false, title = "DMI")
 show_cci       = input(false, title = "CCI")
 show_mom       = input(false, title = "Momentum")
 show_rott      = input(false, title = "ROTT")
@@ -327,3 +328,20 @@ plot_rott = plot(show_rott ? ott : na,         color= color.rgb(217, 0, 255), ti
 
 // ====================================================================================================================================================================================
 
+lensig_dmi = input.int(14, title="ADX Smoothing", minval=1, maxval=50)
+len_dmi    = input.int(14, minval=1, title="DI Length")
+up_dmi     = ta.change(high)
+down_dmi   = -ta.change(low)
+plusDM     = na(up) ? na : (up > down and up > 0 ? up : 0)
+minusDM    = na(down) ? na : (down > up and down > 0 ? down : 0)
+trur       = ta.rma(ta.tr, len_dmi)
+plus       = fixnan(100 * ta.rma(plusDM, len_dmi) / trur)
+minus      = fixnan(100 * ta.rma(minusDM, len_dmi) / trur)
+sum        = plus + minus
+adx        = 100 * ta.rma(math.abs(plus - minus) / (sum == 0 ? 1 : sum), lensig_dmi)
+
+plot(show_dmi ? adx   : na, color=#F50057, title="ADX")
+plot(show_dmi ? plus  : na, color=#2962FF, title="+DI")
+plot(show_dmi ? minus : na, color=#FF6D00, title="-DI")
+
+// ====================================================================================================================================================================================
