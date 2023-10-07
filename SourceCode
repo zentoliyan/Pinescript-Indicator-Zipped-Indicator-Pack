@@ -280,7 +280,6 @@ plot(show_dmi ? minus : na, color=#FF6D00, title="-DI")
 
 source_for_moving_averages = close
 
-
 ma1(source_for_moving_averages, length, type) =>
     switch type
         "WMA" => ta.wma(source_for_moving_averages, length)
