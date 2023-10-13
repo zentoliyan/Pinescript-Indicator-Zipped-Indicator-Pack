@@ -21,6 +21,7 @@ show_cmf       = input(false, title = "CMF")
 show_bb        = input(false, title = "Bollinger Bands")
 show_wo        = input(false, title = "Wavetrend Oscillator")
 show_iftor     = input(false, title = "Inverse Fisher Transform on RSI")
+show_iftors    = input(false, title = "Inverse Fisher Transform on Stoch")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
@@ -52,6 +53,7 @@ efsun_group     = "EFSUN Ayarları"
 most_group      = "MOST Ayarları"
 tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
 iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
+iftors_group    = "Inverse Fisher Transform on Stoch Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -103,12 +105,12 @@ signal_length = input.int(title="Signal Smoothing",  minval = 1, maxval = 50, de
 sma_source    = input.string(title="Oscillator MA Type",  defval="EMA", options=["SMA", "EMA"], group = macd_group)
 sma_signal    = input.string(title="Signal Line MA Type", defval="EMA", options=["SMA", "EMA"], group = macd_group)
 // Plot colors
-col_macd       = input(#2962FF, "MACD Line  ", group=macd_group, inline="MACD")
+col_macd       = input(#2962FF, "MACD Line  ",   group=macd_group, inline="MACD")
 col_signal     = input(#FF6D00, "Signal Line  ", group=macd_group, inline="Signal")
-col_grow_above = input(#26A69A, "Above   Grow", group=macd_group, inline="Above")
-col_fall_above = input(#B2DFDB, "Fall", group=macd_group, inline="Above")
-col_grow_below = input(#FFCDD2, "Below Grow", group=macd_group, inline="Below")
-col_fall_below = input(#FF5252, "Fall", group=macd_group, inline="Below")
+col_grow_above = input(#26A69A, "Above   Grow",  group=macd_group, inline="Above")
+col_fall_above = input(#B2DFDB, "Fall",          group=macd_group, inline="Above")
+col_grow_below = input(#FFCDD2, "Below Grow",    group=macd_group, inline="Below")
+col_fall_below = input(#FF5252, "Fall",          group=macd_group, inline="Below")
 // Calculating
 fast_ma = sma_source == "SMA" ? ta.sma(src, fast_length) : ta.ema(src, fast_length)
 slow_ma = sma_source == "SMA" ? ta.sma(src, slow_length) : ta.ema(src, slow_length)
@@ -438,6 +440,17 @@ plot(show_iftor ? INV : na, color=color.new(color.green, 0), linewidth=2)
 hline(show_iftor ? 0.5  : na, color=color.red)
 hline(show_iftor ? -0.5 : na, color=color.green)
 
+// ====================================================================================================================================================================================
+
+stochlength_iftors = input(5, 'STOCH Length', group = iftors_group)
+wmalength_iftors   = input(9, title='Smoothing length', group = iftors_group)
+v1_iftors          = 0.1 * (ta.stoch(close, high, low, stochlength_iftors) - 50)
+v2_iftors          = ta.wma(v1_iftors, wmalength_iftors)
+INV_iftors         = (math.exp(2 * v2_iftors) - 1) / (math.exp(2 * v2_iftors) + 1)
+
+plot(show_iftors  ? INV  : na, color=color.new(color.blue, 0), linewidth=2)
+hline(show_iftors ? 0.5  : na, color=color.red)
+hline(show_iftors ? -0.5 : na, color=color.green)
 // ====================================================================================================================================================================================
 
 period1_most       = input(14, title="Periyot", group = most_group)
