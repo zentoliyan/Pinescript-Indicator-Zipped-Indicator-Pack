@@ -15,11 +15,12 @@ show_adx       = input(false, title = "ADX")
 show_dmi       = input(false, title = "DMI")
 show_cci       = input(false, title = "CCI")
 show_mom       = input(false, title = "Momentum")
-show_rott      = input(false, title = "ROTT")
-show_risotto   = input(false, title = "RISOTTO")
 show_mfi       = input(false, title = "MFI")
 show_bbp       = input(false, title = "BBP")
 show_cmf       = input(false, title = "CMF")
+show_bb        = input(false, title = "Bollinger Bands")
+show_rott      = input(false, title = "ROTT")
+show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
@@ -41,6 +42,7 @@ mom_group       = "Momentum Ayarları"
 mfi_group       = "MFI Ayarları"
 bbp_group       = "BBP Ayarları"
 cmf_group       = "CMF Ayarları"
+bb_group        = "Bollinger Bands Ayarları"
 efsun_group     = "EFSUN Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
@@ -216,6 +218,33 @@ smoothingLength = input.int(title = "Length", defval = 5, minval = 1, maxval = 1
 
 smoothingLine = ma_cci(cci, smoothingLength, typeMA)
 plot(show_cci ? smoothingLine : na, title="Smoothing Line", color=#f37f20, display=display.none)
+
+// ====================================================================================================================================================================================
+
+length_bb = input.int(20, minval=1, group = bb_group)
+maType_bb = input.string("SMA", "Basis MA Type", options = ["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA", group = bb_group)
+src_bb    = input(close, title="Source", group = bb_group)
+mult_bb   = input.float(2.0, minval=0.001, maxval=50, title="StdDev", group = bb_group)
+
+ma_bb(source, length, _type) =>
+    switch _type
+        "SMA" => ta.sma(source, length)
+        "EMA" => ta.ema(source, length)
+        "SMMA (RMA)" => ta.rma(source, length)
+        "WMA" => ta.wma(source, length)
+        "VWMA" => ta.vwma(source, length)
+
+basis  = ma_bb(src_bb, length_bb, maType_bb)
+dev    = mult_bb * ta.stdev(src_bb, length_bb)
+upper  = basis + dev
+lower  = basis - dev
+offset = input.int(0, "Offset", minval = -500, maxval = 500)
+
+p1_bb = plot(upper ? show_bb : na, "Upper", color=#2962FF, offset = offset)
+p2_bb = plot(lower ? show_bb : na, "Lower", color=#2962FF, offset = offset)
+
+plot(basis, "Basis", color=#FF6D00, offset = offset)
+fill(p1_bb, p2_bb, title = "Background", color=color.rgb(33, 150, 243, 95))
 
 // ====================================================================================================================================================================================
 
