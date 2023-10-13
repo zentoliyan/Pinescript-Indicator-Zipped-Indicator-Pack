@@ -20,13 +20,9 @@ show_bbp       = input(false, title = "BBP")
 show_cmf       = input(false, title = "CMF")
 show_bb        = input(false, title = "Bollinger Bands")
 show_wo        = input(false, title = "Wavetrend Oscillator")
-show_iftor     = input(false, title = "Inverse Fisher Transform on RSI")
-show_iftors    = input(false, title = "Inverse Fisher Transform on Stoch")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
-show_most      = input(false, title = "MOST")
-show_tke       = input(false, title = "Talep Konsantrasyon Eğrisi")
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
 show_ma3       = input(false, title = "MA3", inline = "MA")
@@ -50,10 +46,6 @@ cmf_group       = "CMF Ayarları"
 bb_group        = "Bollinger Bands Ayarları"
 wo_group        = "Wavetrend Oscillator Ayarları"
 efsun_group     = "EFSUN Ayarları"
-most_group      = "MOST Ayarları"
-tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
-iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
-iftors_group    = "Inverse Fisher Transform on Stoch Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -105,12 +97,12 @@ signal_length = input.int(title="Signal Smoothing",  minval = 1, maxval = 50, de
 sma_source    = input.string(title="Oscillator MA Type",  defval="EMA", options=["SMA", "EMA"], group = macd_group)
 sma_signal    = input.string(title="Signal Line MA Type", defval="EMA", options=["SMA", "EMA"], group = macd_group)
 // Plot colors
-col_macd       = input(#2962FF, "MACD Line  ",   group=macd_group, inline="MACD")
+col_macd       = input(#2962FF, "MACD Line  ", group=macd_group, inline="MACD")
 col_signal     = input(#FF6D00, "Signal Line  ", group=macd_group, inline="Signal")
-col_grow_above = input(#26A69A, "Above   Grow",  group=macd_group, inline="Above")
-col_fall_above = input(#B2DFDB, "Fall",          group=macd_group, inline="Above")
-col_grow_below = input(#FFCDD2, "Below Grow",    group=macd_group, inline="Below")
-col_fall_below = input(#FF5252, "Fall",          group=macd_group, inline="Below")
+col_grow_above = input(#26A69A, "Above   Grow", group=macd_group, inline="Above")
+col_fall_above = input(#B2DFDB, "Fall", group=macd_group, inline="Above")
+col_grow_below = input(#FFCDD2, "Below Grow", group=macd_group, inline="Below")
+col_fall_below = input(#FF5252, "Fall", group=macd_group, inline="Below")
 // Calculating
 fast_ma = sma_source == "SMA" ? ta.sma(src, fast_length) : ta.ema(src, fast_length)
 slow_ma = sma_source == "SMA" ? ta.sma(src, slow_length) : ta.ema(src, slow_length)
@@ -427,90 +419,6 @@ ad = close==high and close==low or high==low ? 0 : ((2*close-low-high)/(high-low
 mf = math.sum(ad, length) / math.sum(volume, length)
 plot(show_cmf ? mf : na, color=#43A047, title="MF")
 hline(show_cmf ? 0 : na, color=#787B86, title="Zero", linestyle=hline.style_dashed)
-
-// ====================================================================================================================================================================================
-
-rsilength_ift = input(5, title = 'RSI Length', group = iftor_group)
-wmalength_ift = input(9, title = 'Smoothing length', group = iftor_group)
-v1            = 0.1 * (ta.rsi(close, rsilength_ift) - 50)
-v2            = ta.wma(v1, wmalength_ift)
-INV           = (math.exp(2 * v2) - 1) / (math.exp(2 * v2) + 1)
-
-plot(show_iftor ? INV : na, color=color.new(color.green, 0), linewidth=2)
-hline(show_iftor ? 0.5  : na, color=color.red)
-hline(show_iftor ? -0.5 : na, color=color.green)
-
-// ====================================================================================================================================================================================
-
-stochlength_iftors = input(5, 'STOCH Length', group = iftors_group)
-wmalength_iftors   = input(9, title='Smoothing length', group = iftors_group)
-v1_iftors          = 0.1 * (ta.stoch(close, high, low, stochlength_iftors) - 50)
-v2_iftors          = ta.wma(v1_iftors, wmalength_iftors)
-INV_iftors         = (math.exp(2 * v2_iftors) - 1) / (math.exp(2 * v2_iftors) + 1)
-
-plot(show_iftors  ? INV  : na, color=color.new(color.blue, 0), linewidth=2)
-hline(show_iftors ? 0.5  : na, color=color.red)
-hline(show_iftors ? -0.5 : na, color=color.green)
-// ====================================================================================================================================================================================
-
-period1_most       = input(14, title="Periyot", group = most_group)
-float percent_most = input(2,  title="Yüzde",   group = most_group)
-
-avg0_most = ta.ema(close, period1_most)
-
-avg1_most = avg0_most - (avg0 * percent_most / 100)
-avg2_most = avg0_most + (avg0 * percent_most / 100)
-
-var float line1_most = na
-var float line2_most = na
-
-line1_most := na(line1_most[1]) ? avg1_most : (avg0_most < line1_most[1] ? avg1_most : (avg1_most > line1_most[1] ? avg1_most : line1_most[1]))
-line2_most := na(line2_most[1]) ? avg2_most : (avg0_most > line2_most[1] ? avg2_most : (avg2_most < line2_most[1] ? avg2_most : line2_most[1]))
-
-cond1_most = ta.crossover(avg0_most, line2_most[1])
-cond2_most = ta.crossunder(line1_most[1], avg0_most)
-
-s1_most = ta.barssince(cond1_most) < ta.barssince(cond2_most)
-s2_most = s1_most ? line1_most : line2_most
-
-plot(show_most ? s2_most : na,   "MOST",  color = color.red, linewidth = 2)
-plot(show_most ? avg0_most : na, "ExMov", color = #00FF00,   linewidth = 2)
-
-// ====================================================================================================================================================================================
-
-period_tke    = input.int(14, title='period',    minval=1, maxval=500, group = tke_group)
-emaperiod_tke = input.int(5,  title='EMAperiod', minval=1, maxval=500, group = tke_group)
-EMA_tke       = input(false,  title='Show EMA Line?')
-momentum_tke  = close / close[period_tke] * 100
-cci_tke       = ta.cci(hlc3, period_tke)
-rsi_tke       = ta.rsi(close, period_tke)
-willr_tke     = (ta.highest(high, period_tke) - close) / (ta.highest(high, period_tke) - ta.lowest(low, period_tke)) * -100
-stosk_tke     = ta.stoch(close, high, low, period_tke)
-upper_s_tke   = math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), period_tke)
-lower_s_tke   = math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), period_tke)
-mfi_tke       = 100.0 - 100.0 / (1.0 + upper_s_tke / lower_s_tke)
-spacing_tke   = input(7)
-length7_tke   = input.int(7, minval=1)
-length14_tke  = input.int(14, minval=1)
-length28_tke  = input.int(28, minval=1)
-average(bp, tr_, length) =>
-    math.sum(bp, length) / math.sum(tr_, length)
-high__tke = math.max(high, close[1])
-low__tke  = math.min(low, close[1])
-bp_tke    = close - low__tke
-tr__tke   = high__tke - low__tke
-avg7_tke  = average(bp_tke, tr__tke, length7_tke)
-avg14_tke = average(bp_tke, tr__tke, length14_tke)
-avg28_tke = average(bp_tke, tr__tke, length28_tke)
-ult_tke   = 100 * (4 * avg7_tke + 2 * avg14_tke + avg28_tke) / 7
-TKEline_tke = (ult_tke + mfi_tke + momentum_tke + cci_tke + rsi_tke + willr_tke + stosk_tke) / 7
-EMAline_tke = ta.ema(TKEline_tke, emaperiod_tke)
-
-plot(show_tke ? (EMA_tke and EMAline_tke ? EMAline_tke : na) : na, title='EMA Line', style=plot.style_line, linewidth=2, color=color.new(color.blue, 0))
-plot(show_tke ? TKEline_tke : na, color=color.new(color.red, 0), linewidth=3, title='TKE')
-plot(show_tke ? 20 : na, color=color.new(color.blue, 0),    linewidth=0, title='')
-plot(show_tke ? 80 : na, color=color.new(color.red, 0),     linewidth=0, title='')
-plot(show_tke ? 0  : na, color=color.new(color.purple, 0),  linewidth=0, title='')
 
 // ====================================================================================================================================================================================
 
