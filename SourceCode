@@ -265,10 +265,10 @@ tci = ta.ema(ci, n2)
 wt1 = tci
 wt2 = ta.sma(wt1, 4)
 
-plot(obLevel1, "Over Bought Level 1", color=color.blue)
-plot(obLevel2, "Over Bought Level 2", color=color.red)
-plot(osLevel1, "Over Sold Level 1",   color=color.blue)
-plot(osLevel2, "Over Sold Level 2",   color=color.red)
+plot(show_wo ? obLevel1 : na, "Over Bought Level 1", color=color.blue)
+plot(show_wo ? obLevel2 : na, "Over Bought Level 2", color=color.red)
+plot(show_wo ? osLevel1 : na, "Over Sold Level 1",   color=color.blue)
+plot(show_wo ? osLevel2 : na, "Over Sold Level 2",   color=color.red)
 
 plot(show_wo ? wt1 : na, "WT1", color=color.green)
 plot(show_wo ? wt2 : na, "WT2", color=color.orange)
