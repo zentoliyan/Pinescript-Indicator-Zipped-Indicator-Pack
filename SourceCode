@@ -26,6 +26,7 @@ show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
 show_most      = input(false, title = "MOST")
+show_wr        = input(false, title = "Williams Yüzde Aralığı")
 show_tke       = input(false, title = "Talep Konsantrasyon Eğrisi")
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
@@ -50,7 +51,9 @@ cmf_group       = "CMF Ayarları"
 bb_group        = "Bollinger Bands Ayarları"
 wo_group        = "Wavetrend Oscillator Ayarları"
 efsun_group     = "EFSUN Ayarları"
+risotto_group   = "RISOTTO Ayarları"
 most_group      = "MOST Ayarları"
+wr_group        = "Williams R Ayarları"
 tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
 iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
 iftors_group    = "Inverse Fisher Transform on Stoch Ayarları"
@@ -339,6 +342,50 @@ plot_rott = plot(show_rott ? ott : na,                 color= color.rgb(217, 0, 
 
 // ====================================================================================================================================================================================
 
+X1_risotto = input(100, title = "RSI Length",  group = risotto_group)
+X2_risotto = input(50,  title = "VAR Length",  group = risotto_group)
+X4_risotto = input(30,  title = "OTT Period",  group = risotto_group)
+X3_risotto = input(0.2, title = "OTT Percent", group = risotto_group)
+
+f_var_risotto(data,u1) =>
+    a = 9
+    b = data > data[1] ? data - data[1] : 0
+    c = data < data[1] ? data[1] - data : 0
+    d = math.sum(b , a)
+    e = math.sum(c , a)
+    f = nz((d - e) / (d + e))
+    g = math.abs(f)
+    h = 2 / (u1 + 1)
+    x = ta.sma(data , u1)
+    vidya = 0.0
+    vidya :=
+     u1==1 ? data : na(vidya[1]) ? x :
+     g * h * (data - nz(vidya[1])) + nz(vidya[1])
+
+OTT_risotto(source, length, percent) =>
+    MAVG = f_var_risotto(source, length)
+    fark = MAVG * percent * 0.01
+    longStop = MAVG - fark
+    longStopPrev = nz(longStop[1], longStop)
+    longStop := MAVG > longStopPrev ? math.max(longStop, longStopPrev) : longStop
+    shortStop = MAVG + fark
+    shortStopPrev = nz(shortStop[1], shortStop)
+    shortStop := MAVG < shortStopPrev ? math.min(shortStop, shortStopPrev) : shortStop
+    dir = 1
+    dir := nz(dir[1], dir)
+    dir := dir == -1 and MAVG > shortStopPrev ? 1 : dir == 1 and MAVG < longStopPrev ? -1 : dir
+    MT = dir == 1 ? longStop : shortStop
+    OTT = MAVG > MT ? MT * (200 + percent) / 200 : MT * (200 - percent) / 200
+    out = nz(OTT[2])
+
+plot1_risotto = f_var_risotto(ta.rsi(close,X1_risotto),X2_risotto) + 1000
+plot2_risotto = OTT_risotto(f_var_risotto(ta.rsi(close,X1_risotto),X2_risotto) + 1000 , X4_risotto, X3_risotto)
+
+plot(show_risotto ? plot1_risotto : na, color= color.new(#1fe5ff, 0),  title = "SUPPORT")
+plot(show_risotto ? plot2_risotto : na, color= color.rgb(217, 0, 255), title = "RISOTTO")
+
+// ====================================================================================================================================================================================
+
 variable1 = input(10,        title="MA Periyodu",   group=efsun_group)
 float variable2 = input(0.5, title="Takip Yüzdesi", group=efsun_group)
 ab = 2/(variable1+1)
@@ -451,6 +498,23 @@ INV_iftors         = (math.exp(2 * v2_iftors) - 1) / (math.exp(2 * v2_iftors) + 
 plot(show_iftors  ? INV  : na, color=color.new(color.blue, 0), linewidth=2)
 hline(show_iftors ? 0.5  : na, color=color.red)
 hline(show_iftors ? -0.5 : na, color=color.green)
+
+// ====================================================================================================================================================================================
+
+length_wr = input(title="Length", defval=14, group = wr_group)
+src_wr    = input(close, "Source", group = wr_group)
+_pr(length) =>
+	max = ta.highest(length)
+	min = ta.lowest(length)
+	100 * (src - max) / (max - min)
+percentR_wr = _pr(length)
+obPlot_wr   = hline(show_wr ? -20 : na, title="Upper Band", color=#787B86)
+
+hline(show_wr ? -50 : na, title="Middle Level", linestyle=hline.style_dotted, color=#787B86)
+osPlot_wr = hline(show_wr ? -80 : na, title="Lower Band", color=#787B86)
+fill(obPlot_wr, osPlot_wr, title="Background", color=color.rgb(126, 87, 194, 90))
+plot(show_wr ? percentR_wr : na, title="%R", color=#7E57C2)
+
 // ====================================================================================================================================================================================
 
 period1_most       = input(14, title="Periyot", group = most_group)
@@ -522,10 +586,11 @@ ma1(source_for_moving_averages, length, type) =>
         "EMA" => ta.ema(source_for_moving_averages, length)
         "SMA" => ta.sma(source_for_moving_averages, length)
         "VWMA" => ta.vwma(source_for_moving_averages, length)
+        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
-maTypeInput1   = input.string("EMA", title="MA 1 Türü", options=["WMA","EMA","SMA","VWMA"], group=ma_group)
-ma1_linewidth  = input.int(1,        title="MA 1 Çizgi Kalımlığı",                          group=ma_group)
-maLengthInput1 = input.int(9,        title="MA 1 Periyodu",                                 group=ma_group)
+maTypeInput1   = input.string("EMA", title="MA 1 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
+ma1_linewidth  = input.int(1,        title="MA 1 Çizgi Kalımlığı",                                    group=ma_group)
+maLengthInput1 = input.int(9,        title="MA 1 Periyodu",                                           group=ma_group)
 
 ma2(source_for_moving_averages, length, type) =>
     switch type
@@ -533,10 +598,11 @@ ma2(source_for_moving_averages, length, type) =>
         "EMA" => ta.ema(source_for_moving_averages, length)
         "SMA" => ta.sma(source_for_moving_averages, length)
         "VWMA" => ta.vwma(source_for_moving_averages, length)
+        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
-maTypeInput2   = input.string("EMA", title="MA 2 Türü", options=["WMA","EMA","SMA","VWMA"], group=ma_group)
-ma2_linewidth  = input.int(1,        title="MA 2 Çizgi Kalımlığı",                          group=ma_group)
-maLengthInput2 = input.int(20,       title="MA 2 Periyodu",                                 group=ma_group)
+maTypeInput2   = input.string("EMA", title="MA 2 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
+ma2_linewidth  = input.int(1,        title="MA 2 Çizgi Kalımlığı",                                    group=ma_group)
+maLengthInput2 = input.int(20,       title="MA 2 Periyodu",                                           group=ma_group)
 
 ma3(source_for_moving_averages, length, type) =>
     switch type
@@ -544,10 +610,11 @@ ma3(source_for_moving_averages, length, type) =>
         "EMA" => ta.ema(source_for_moving_averages, length)
         "SMA" => ta.sma(source_for_moving_averages, length)
         "VWMA" => ta.vwma(source_for_moving_averages, length)
+        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
-maTypeInput3   = input.string("EMA", title="MA 3 Türü", options=["WMA","EMA","SMA","VWMA"], group=ma_group)
-ma3_linewidth  = input.int(1,        title="MA 3 Çizgi Kalımlığı",                          group=ma_group)
-maLengthInput3 = input.int(50,       title="MA 3 Periyodu",                                 group=ma_group)
+maTypeInput3   = input.string("EMA", title="MA 3 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
+ma3_linewidth  = input.int(1,        title="MA 3 Çizgi Kalımlığı",                                    group=ma_group)
+maLengthInput3 = input.int(50,       title="MA 3 Periyodu",                                           group=ma_group)
 
 ma4(source_for_moving_averages, length, type) =>
     switch type
@@ -555,10 +622,11 @@ ma4(source_for_moving_averages, length, type) =>
         "EMA" => ta.ema(source_for_moving_averages, length)
         "SMA" => ta.sma(source_for_moving_averages, length)
         "VWMA" => ta.vwma(source_for_moving_averages, length)
+        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
-maTypeInput4   = input.string("EMA", title="MA 4 Türü", options=["WMA","EMA","SMA","VWMA"], group=ma_group)
-ma4_linewidth  = input.int(1,        title="MA 4 Çizgi Kalımlığı",                          group=ma_group)
-maLengthInput4 = input.int(100,      title="MA 4 Periyodu",                                 group=ma_group)
+maTypeInput4   = input.string("EMA", title="MA 4 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
+ma4_linewidth  = input.int(1,        title="MA 4 Çizgi Kalımlığı",                                    group=ma_group)
+maLengthInput4 = input.int(100,      title="MA 4 Periyodu",                                           group=ma_group)
 
 ma5(source_for_moving_averages, length, type) =>
     switch type
@@ -566,10 +634,11 @@ ma5(source_for_moving_averages, length, type) =>
         "EMA" => ta.ema(source_for_moving_averages, length)
         "SMA" => ta.sma(source_for_moving_averages, length)
         "VWMA" => ta.vwma(source_for_moving_averages, length)
+        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
-maTypeInput5   = input.string("EMA", title="MA 5 Türü", options=["WMA","EMA","SMA","VWMA"], group=ma_group)
-ma5_linewidth  = input.int(1,        title="MA 5 Çizgi Kalımlığı",                          group=ma_group)
-maLengthInput5 = input.int(200,      title="MA 5 Periyodu",                                 group=ma_group)
+maTypeInput5   = input.string("EMA", title="MA 5 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
+ma5_linewidth  = input.int(1,        title="MA 5 Çizgi Kalımlığı",                                    group=ma_group)
+maLengthInput5 = input.int(200,      title="MA 5 Periyodu",                                           group=ma_group)
 
 maline1 = ma1(source_for_moving_averages, maLengthInput1, maTypeInput1)
 maline2 = ma2(source_for_moving_averages, maLengthInput2, maTypeInput2)
@@ -584,3 +653,4 @@ plot(show_ma4 ? maline4 : na, title="Dördüncü MA Çizgisi", color=color.new(c
 plot(show_ma5 ? maline5 : na, title="Beşinci MA Çizgisi",  color=color.new(color.orange, 0), linewidth=ma1_linewidth)
 
 // ====================================================================================================================================================================================
+
