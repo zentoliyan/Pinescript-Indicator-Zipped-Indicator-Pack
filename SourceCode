@@ -24,6 +24,7 @@ show_iftor     = input(false, title = "Inverse Fisher Transform on RSI")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
+show_most      = input(false, title = "MOST")
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
 show_ma3       = input(false, title = "MA3", inline = "MA")
@@ -47,6 +48,7 @@ cmf_group       = "CMF Ayarları"
 bb_group        = "Bollinger Bands Ayarları"
 wo_group        = "Wavetrend Oscillator Ayarları"
 efsun_group     = "EFSUN Ayarları"
+most_group      = "MOST Ayarları"
 iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
@@ -433,6 +435,31 @@ INV           = (math.exp(2 * v2) - 1) / (math.exp(2 * v2) + 1)
 plot(show_iftor ? INV : na, color=color.new(color.green, 0), linewidth=2)
 hline(show_iftor ? 0.5  : na, color=color.red)
 hline(show_iftor ? -0.5 : na, color=color.green)
+
+// ====================================================================================================================================================================================
+
+period1_most       = input(14, title="Periyot", group = most_group)
+float percent_most = input(2,  title="Yüzde",   group = most_group)
+
+avg0_most = ta.ema(close, period1_most)
+
+avg1_most = avg0_most - (avg0 * percent_most / 100)
+avg2_most = avg0_most + (avg0 * percent_most / 100)
+
+var float line1_most = na
+var float line2_most = na
+
+line1_most := na(line1_most[1]) ? avg1_most : (avg0_most < line1_most[1] ? avg1_most : (avg1_most > line1_most[1] ? avg1_most : line1_most[1]))
+line2_most := na(line2_most[1]) ? avg2_most : (avg0_most > line2_most[1] ? avg2_most : (avg2_most < line2_most[1] ? avg2_most : line2_most[1]))
+
+cond1_most = ta.crossover(avg0_most, line2_most[1])
+cond2_most = ta.crossunder(line1_most[1], avg0_most)
+
+s1_most = ta.barssince(cond1_most) < ta.barssince(cond2_most)
+s2_most = s1_most ? line1_most : line2_most
+
+plot(show_most ? s2_most : na,   "MOST",  color = color.red, linewidth = 2)
+plot(show_most ? avg0_most : na, "ExMov", color = #00FF00,   linewidth = 2)
 
 // ====================================================================================================================================================================================
 
