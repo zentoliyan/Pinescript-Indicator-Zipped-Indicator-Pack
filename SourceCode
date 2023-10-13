@@ -25,6 +25,7 @@ show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
 show_most      = input(false, title = "MOST")
+show_tke       = input(false, title = "Talep Konsantrasyon Eğrisi")
 show_ma1       = input(false, title = "MA1", inline = "MA")
 show_ma2       = input(false, title = "MA2", inline = "MA")
 show_ma3       = input(false, title = "MA3", inline = "MA")
@@ -49,6 +50,7 @@ bb_group        = "Bollinger Bands Ayarları"
 wo_group        = "Wavetrend Oscillator Ayarları"
 efsun_group     = "EFSUN Ayarları"
 most_group      = "MOST Ayarları"
+tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
 iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
@@ -460,6 +462,42 @@ s2_most = s1_most ? line1_most : line2_most
 
 plot(show_most ? s2_most : na,   "MOST",  color = color.red, linewidth = 2)
 plot(show_most ? avg0_most : na, "ExMov", color = #00FF00,   linewidth = 2)
+
+// ====================================================================================================================================================================================
+
+period_tke    = input.int(14, title='period',    minval=1, maxval=500, group = tke_group)
+emaperiod_tke = input.int(5,  title='EMAperiod', minval=1, maxval=500, group = tke_group)
+EMA_tke       = input(false,  title='Show EMA Line?')
+momentum_tke  = close / close[period_tke] * 100
+cci_tke       = ta.cci(hlc3, period_tke)
+rsi_tke       = ta.rsi(close, period_tke)
+willr_tke     = (ta.highest(high, period_tke) - close) / (ta.highest(high, period_tke) - ta.lowest(low, period_tke)) * -100
+stosk_tke     = ta.stoch(close, high, low, period_tke)
+upper_s_tke   = math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), period_tke)
+lower_s_tke   = math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), period_tke)
+mfi_tke       = 100.0 - 100.0 / (1.0 + upper_s_tke / lower_s_tke)
+spacing_tke   = input(7)
+length7_tke   = input.int(7, minval=1)
+length14_tke  = input.int(14, minval=1)
+length28_tke  = input.int(28, minval=1)
+average(bp, tr_, length) =>
+    math.sum(bp, length) / math.sum(tr_, length)
+high__tke = math.max(high, close[1])
+low__tke  = math.min(low, close[1])
+bp_tke    = close - low__tke
+tr__tke   = high__tke - low__tke
+avg7_tke  = average(bp_tke, tr__tke, length7_tke)
+avg14_tke = average(bp_tke, tr__tke, length14_tke)
+avg28_tke = average(bp_tke, tr__tke, length28_tke)
+ult_tke   = 100 * (4 * avg7_tke + 2 * avg14_tke + avg28_tke) / 7
+TKEline_tke = (ult_tke + mfi_tke + momentum_tke + cci_tke + rsi_tke + willr_tke + stosk_tke) / 7
+EMAline_tke = ta.ema(TKEline_tke, emaperiod_tke)
+
+plot(show_tke ? (EMA_tke and EMAline_tke ? EMAline_tke : na) : na, title='EMA Line', style=plot.style_line, linewidth=2, color=color.new(color.blue, 0))
+plot(show_tke ? TKEline_tke : na, color=color.new(color.red, 0), linewidth=3, title='TKE')
+plot(show_tke ? 20 : na, color=color.new(color.blue, 0),    linewidth=0, title='')
+plot(show_tke ? 80 : na, color=color.new(color.red, 0),     linewidth=0, title='')
+plot(show_tke ? 0  : na, color=color.new(color.purple, 0),  linewidth=0, title='')
 
 // ====================================================================================================================================================================================
 
