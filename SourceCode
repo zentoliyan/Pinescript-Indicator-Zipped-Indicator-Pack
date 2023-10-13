@@ -19,6 +19,7 @@ show_mfi       = input(false, title = "MFI")
 show_bbp       = input(false, title = "BBP")
 show_cmf       = input(false, title = "CMF")
 show_bb        = input(false, title = "Bollinger Bands")
+show_wo        = input(false, title = "Wavetrend Oscillator")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
@@ -43,6 +44,7 @@ mfi_group       = "MFI Ayarları"
 bbp_group       = "BBP Ayarları"
 cmf_group       = "CMF Ayarları"
 bb_group        = "Bollinger Bands Ayarları"
+wo_group        = "Wavetrend Oscillator Ayarları"
 efsun_group     = "EFSUN Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
@@ -245,6 +247,38 @@ p2_bb = plot(show_bb ? lower : na, "Lower", color=#2962FF, offset = offset)
 
 plot(show_bb ? basis : na, "Basis", color=#FF6D00, offset = offset)
 fill(p1_bb, p2_bb, title = "Background", color=color.rgb(33, 150, 243, 95))
+
+// ====================================================================================================================================================================================
+
+n1       = input(10, "Channel Length",      group = wo_group)
+n2       = input(21, "Average Length",      group = wo_group)
+obLevel1 = input(60, "Over Bought Level 1", group = wo_group)
+obLevel2 = input(53, "Over Bought Level 2", group = wo_group)
+osLevel1 = input(-60, "Over Sold Level 1",  group = wo_group)
+osLevel2 = input(-53, "Over Sold Level 2",  group = wo_group)
+
+ap  = (high + low + close) / 3
+esa = ta.ema(ap, n1)
+d   = ta.ema(math.abs(ap - esa), n1)
+ci  = (ap - esa) / (0.015 * d)
+tci = ta.ema(ci, n2)
+wt1 = tci
+wt2 = ta.sma(wt1, 4)
+
+plot(obLevel1, "Over Bought Level 1", color=color.blue)
+plot(obLevel2, "Over Bought Level 2", color=color.red)
+plot(osLevel1, "Over Sold Level 1",   color=color.blue)
+plot(osLevel2, "Over Sold Level 2",   color=color.red)
+
+plot(show_wo ? wt1 : na, "WT1", color=color.green)
+plot(show_wo ? wt2 : na, "WT2", color=color.orange)
+
+buycond_wo  = ta.crossover(wt1,wt2)
+sellcond_wo = ta.crossover(wt2,wt1)
+
+signals_wo = input.bool(defval=true, title="Signals")
+plotshape(show_wo ? (signals_wo ? buycond==1  ? wt1 : na : na) : na, title='BUY Point',  location=location.absolute, style=shape.circle, size=size.tiny, color = color.rgb(0, 255, 8), editable=true)
+plotshape(show_wo ? (signals_wo ? sellcond==1 ? wt1 : na : na) : na, title='SELL Point', location=location.absolute, style=shape.circle, size=size.tiny, color = color.rgb(255, 0, 0), editable=true)
 
 // ====================================================================================================================================================================================
 
