@@ -20,6 +20,7 @@ show_bbp       = input(false, title = "BBP")
 show_cmf       = input(false, title = "CMF")
 show_bb        = input(false, title = "Bollinger Bands")
 show_wo        = input(false, title = "Wavetrend Oscillator")
+show_iftor     = input(false, title = "Inverse Fisher Transform on RSI")
 show_rott      = input(false, title = "ROTT")
 show_risotto   = input(false, title = "RISOTTO")
 show_efsun     = input(false, title = "EFSUN")
@@ -46,6 +47,7 @@ cmf_group       = "CMF Ayarları"
 bb_group        = "Bollinger Bands Ayarları"
 wo_group        = "Wavetrend Oscillator Ayarları"
 efsun_group     = "EFSUN Ayarları"
+iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -419,6 +421,18 @@ ad = close==high and close==low or high==low ? 0 : ((2*close-low-high)/(high-low
 mf = math.sum(ad, length) / math.sum(volume, length)
 plot(show_cmf ? mf : na, color=#43A047, title="MF")
 hline(show_cmf ? 0 : na, color=#787B86, title="Zero", linestyle=hline.style_dashed)
+
+// ====================================================================================================================================================================================
+
+rsilength_ift = input(5, title = 'RSI Length', group = iftor_group)
+wmalength_ift = input(9, title = 'Smoothing length', group = iftor_group)
+v1            = 0.1 * (ta.rsi(close, rsilength_ift) - 50)
+v2            = ta.wma(v1, wmalength_ift)
+INV           = (math.exp(2 * v2) - 1) / (math.exp(2 * v2) + 1)
+
+plot(show_iftor ? INV : na, color=color.new(color.green, 0), linewidth=2)
+hline(show_iftor ? 0.5  : na, color=color.red)
+hline(show_iftor ? -0.5 : na, color=color.green)
 
 // ====================================================================================================================================================================================
 
