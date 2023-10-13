@@ -240,10 +240,10 @@ upper  = basis + dev
 lower  = basis - dev
 offset = input.int(0, "Offset", minval = -500, maxval = 500)
 
-p1_bb = plot(upper ? show_bb : na, "Upper", color=#2962FF, offset = offset)
-p2_bb = plot(lower ? show_bb : na, "Lower", color=#2962FF, offset = offset)
+p1_bb = plot(show_bb ? upper : na, "Upper", color=#2962FF, offset = offset)
+p2_bb = plot(show_bb ? lower : na, "Lower", color=#2962FF, offset = offset)
 
-plot(basis, "Basis", color=#FF6D00, offset = offset)
+plot(show_bb ? basis : na, "Basis", color=#FF6D00, offset = offset)
 fill(p1_bb, p2_bb, title = "Background", color=color.rgb(33, 150, 243, 95))
 
 // ====================================================================================================================================================================================
