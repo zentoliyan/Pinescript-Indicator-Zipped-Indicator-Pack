@@ -103,7 +103,7 @@ fill(rsiPlot, midLinePlot, 30,  0,  top_color = color.new(color.red, 100), botto
 // Getting inputs
 fast_length   = input(title="Fast Length", defval=12, group = macd_group)
 slow_length   = input(title="Slow Length", defval=26, group = macd_group)
-src           = input(title="Source", defval=close, group = macd_group)
+src           = input(title="Source",      defval=close, group = macd_group)
 signal_length = input.int(title="Signal Smoothing",  minval = 1, maxval = 50, defval = 9, group = macd_group)
 sma_source    = input.string(title="Oscillator MA Type",  defval="EMA", options=["SMA", "EMA"], group = macd_group)
 sma_signal    = input.string(title="Signal Line MA Type", defval="EMA", options=["SMA", "EMA"], group = macd_group)
