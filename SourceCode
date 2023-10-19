@@ -16,7 +16,6 @@ show_dmi       = input(false, title = "DMI")
 show_cci       = input(false, title = "CCI")
 show_mom       = input(false, title = "Momentum")
 show_mfi       = input(false, title = "MFI")
-show_bbp       = input(false, title = "BBP")
 show_cmf       = input(false, title = "CMF")
 show_bb        = input(false, title = "Bollinger Bands")
 show_wo        = input(false, title = "Wavetrend Oscillator")
@@ -46,7 +45,6 @@ dmi_group       = "DMI Ayarları"
 cci_group       = "CCI ayarları"
 mom_group       = "Momentum Ayarları"
 mfi_group       = "MFI Ayarları"
-bbp_group       = "BBP Ayarları"
 cmf_group       = "CMF Ayarları"
 bb_group        = "Bollinger Bands Ayarları"
 wo_group        = "Wavetrend Oscillator Ayarları"
@@ -455,13 +453,6 @@ oversold_mfi   = hline(show_mfi ? 20 : na, title="Oversold", color=#787B86)
 plot(show_mfi ? mf_mfi : na, "MF", color=#7E57C2)
 hline(show_mfi ? 50 : na, "Middle Band", color=color.new(#787B86, 50))
 fill(overbought_mfi, oversold_mfi, color=color.rgb(126, 87, 194, 90), title="Background")
-
-// ====================================================================================================================================================================================
-
-lengthInput = input.int(13, title="Length", group = bbp_group)
-bullPower   = high - ta.ema(close, lengthInput)
-bearPower   = low - ta.ema(close, lengthInput)
-plot(show_bbp ? (bullPower + bearPower) : na, title="BBPower")
 
 // ====================================================================================================================================================================================
 
