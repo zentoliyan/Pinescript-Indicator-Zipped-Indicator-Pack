@@ -483,7 +483,7 @@ v1            = 0.1 * (ta.rsi(close, rsilength_ift) - 50)
 v2            = ta.wma(v1, wmalength_ift)
 INV           = (math.exp(2 * v2) - 1) / (math.exp(2 * v2) + 1)
 
-plot(show_iftor  ? INV  : na, color=color.new(color.green, 0), linewidth=2)
+plot(show_iftor ? INV : na, color=color.new(color.green, 0), linewidth=2)
 hline(show_iftor ? 0.5  : na, color=color.red)
 hline(show_iftor ? -0.5 : na, color=color.green)
 
@@ -554,9 +554,9 @@ upper_s_tke   = math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), period_tke)
 lower_s_tke   = math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), period_tke)
 mfi_tke       = 100.0 - 100.0 / (1.0 + upper_s_tke / lower_s_tke)
 spacing_tke   = input(7)
-length7_tke   = input.int(7,  minval=1, group = tke_group)
-length14_tke  = input.int(14, minval=1, group = tke_group)
-length28_tke  = input.int(28, minval=1, group = tke_group)
+length7_tke   = input.int(7, minval=1)
+length14_tke  = input.int(14, minval=1)
+length28_tke  = input.int(28, minval=1)
 average(bp, tr_, length) =>
     math.sum(bp, length) / math.sum(tr_, length)
 high__tke = math.max(high, close[1])
@@ -572,9 +572,9 @@ EMAline_tke = ta.ema(TKEline_tke, emaperiod_tke)
 
 plot(show_tke ? (EMA_tke and EMAline_tke ? EMAline_tke : na) : na, title='EMA Line', style=plot.style_line, linewidth=2, color=color.new(color.blue, 0))
 plot(show_tke ? TKEline_tke : na, color=color.new(color.red, 0), linewidth=3, title='TKE')
-plot(show_tke ? 20 : na, color=color.new(color.blue, 0),         linewidth=0, title='')
-plot(show_tke ? 80 : na, color=color.new(color.red, 0),          linewidth=0, title='')
-plot(show_tke ? 0  : na, color=color.new(color.purple, 0),       linewidth=0, title='')
+plot(show_tke ? 20 : na, color=color.new(color.blue, 0),    linewidth=0, title='')
+plot(show_tke ? 80 : na, color=color.new(color.red, 0),     linewidth=0, title='')
+plot(show_tke ? 0  : na, color=color.new(color.purple, 0),  linewidth=0, title='')
 
 // ====================================================================================================================================================================================
 
@@ -582,10 +582,10 @@ source_for_moving_averages = close
 
 ma1(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
         "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
 maTypeInput1   = input.string("EMA", title="MA 1 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
@@ -594,10 +594,10 @@ maLengthInput1 = input.int(9,        title="MA 1 Periyodu",                     
 
 ma2(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
         "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
 maTypeInput2   = input.string("EMA", title="MA 2 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
@@ -606,10 +606,10 @@ maLengthInput2 = input.int(20,       title="MA 2 Periyodu",                     
 
 ma3(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
         "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
 maTypeInput3   = input.string("EMA", title="MA 3 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
@@ -618,10 +618,10 @@ maLengthInput3 = input.int(50,       title="MA 3 Periyodu",                     
 
 ma4(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
         "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
 maTypeInput4   = input.string("EMA", title="MA 4 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
@@ -630,10 +630,10 @@ maLengthInput4 = input.int(100,      title="MA 4 Periyodu",                     
 
 ma5(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
+        "WMA" => ta.wma(source_for_moving_averages, length)
+        "EMA" => ta.ema(source_for_moving_averages, length)
+        "SMA" => ta.sma(source_for_moving_averages, length)
+        "VWMA" => ta.vwma(source_for_moving_averages, length)
         "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
 
 maTypeInput5   = input.string("EMA", title="MA 5 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
@@ -653,3 +653,4 @@ plot(show_ma4 ? maline4 : na, title="Dördüncü MA Çizgisi", color=color.new(c
 plot(show_ma5 ? maline5 : na, title="Beşinci MA Çizgisi",  color=color.new(color.orange, 0), linewidth=ma1_linewidth)
 
 // ====================================================================================================================================================================================
+
