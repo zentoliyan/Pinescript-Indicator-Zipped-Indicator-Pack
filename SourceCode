@@ -580,65 +580,92 @@ plot(show_tke ? 0  : na, color=color.new(color.purple, 0),       linewidth=0, ti
 
 source_for_moving_averages = close
 
+// =====================================================================================================================
+
+f_var_ma(data,u1) =>
+    a = 9
+    b = data > data[1] ? data - data[1] : 0
+    c = data < data[1] ? data[1] - data : 0
+    d = math.sum(b , a)
+    e = math.sum(c , a)
+    f = nz((d - e) / (d + e))
+    g = math.abs(f)
+    h = 2 / (u1 + 1)
+    x = ta.sma(data , u1)
+    vidya = 0.0
+    vidya :=
+     u1==1 ? data : na(vidya[1]) ? x :
+     g * h * (data - nz(vidya[1])) + nz(vidya[1])
+
+f_hull_ma(source,len) =>
+    ta.wma(2*ta.wma(source, len/2)-ta.wma(source, len), math.floor(math.sqrt(len)))
+
+// =====================================================================================================================
+
 ma1(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
-        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
+        "WMA"     => ta.wma(source_for_moving_averages,    length)
+        "EMA"     => ta.ema(source_for_moving_averages,    length)
+        "SMA"     => ta.sma(source_for_moving_averages,    length)
+        "VWMA"    => ta.vwma(source_for_moving_averages,   length)
+        "HULL MA" => f_hull_ma(source_for_moving_averages, length)
+        "VAR"     => f_var_ma(source_for_moving_averages,  length)
 
-maTypeInput1   = input.string("EMA", title="MA 1 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
-ma1_linewidth  = input.int(1,        title="MA 1 Çizgi Kalımlığı",                                    group=ma_group)
-maLengthInput1 = input.int(9,        title="MA 1 Periyodu",                                           group=ma_group)
+maTypeInput1   = input.string("EMA", title="MA 1 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA", "VAR"], group=ma_group)
+ma1_linewidth  = input.int(1,        title="MA 1 Çizgi Kalımlığı",                                           group=ma_group)
+maLengthInput1 = input.int(9,        title="MA 1 Periyodu",                                                  group=ma_group)
 
 ma2(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
-        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
+        "WMA"     => ta.wma(source_for_moving_averages,    length)
+        "EMA"     => ta.ema(source_for_moving_averages,    length)
+        "SMA"     => ta.sma(source_for_moving_averages,    length)
+        "VWMA"    => ta.vwma(source_for_moving_averages,   length)
+        "HULL MA" => f_hull_ma(source_for_moving_averages, length)
+        "VAR"     => f_var_ma(source_for_moving_averages,  length)
 
-maTypeInput2   = input.string("EMA", title="MA 2 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
-ma2_linewidth  = input.int(1,        title="MA 2 Çizgi Kalımlığı",                                    group=ma_group)
-maLengthInput2 = input.int(20,       title="MA 2 Periyodu",                                           group=ma_group)
+maTypeInput2   = input.string("EMA", title="MA 2 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA","VAR"], group=ma_group)
+ma2_linewidth  = input.int(1,        title="MA 2 Çizgi Kalımlığı",                                          group=ma_group)
+maLengthInput2 = input.int(20,       title="MA 2 Periyodu",                                                 group=ma_group)
 
 ma3(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
-        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
+        "WMA"     => ta.wma(source_for_moving_averages,    length)
+        "EMA"     => ta.ema(source_for_moving_averages,    length)
+        "SMA"     => ta.sma(source_for_moving_averages,    length)
+        "VWMA"    => ta.vwma(source_for_moving_averages,   length)
+        "HULL MA" => f_hull_ma(source_for_moving_averages, length)
+        "VAR"     => f_var_ma(source_for_moving_averages,  length)
 
-maTypeInput3   = input.string("EMA", title="MA 3 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
-ma3_linewidth  = input.int(1,        title="MA 3 Çizgi Kalımlığı",                                    group=ma_group)
-maLengthInput3 = input.int(50,       title="MA 3 Periyodu",                                           group=ma_group)
+maTypeInput3   = input.string("EMA", title="MA 3 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA","VAR"], group=ma_group)
+ma3_linewidth  = input.int(1,        title="MA 3 Çizgi Kalımlığı",                                          group=ma_group)
+maLengthInput3 = input.int(50,       title="MA 3 Periyodu",                                                 group=ma_group)
 
 ma4(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
-        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
+        "WMA"     => ta.wma(source_for_moving_averages,    length)
+        "EMA"     => ta.ema(source_for_moving_averages,    length)
+        "SMA"     => ta.sma(source_for_moving_averages,    length)
+        "VWMA"    => ta.vwma(source_for_moving_averages,   length)
+        "HULL MA" => f_hull_ma(source_for_moving_averages, length)
+        "VAR"     => f_var_ma(source_for_moving_averages,  length)
 
-maTypeInput4   = input.string("EMA", title="MA 4 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
-ma4_linewidth  = input.int(1,        title="MA 4 Çizgi Kalımlığı",                                    group=ma_group)
-maLengthInput4 = input.int(100,      title="MA 4 Periyodu",                                           group=ma_group)
+maTypeInput4   = input.string("EMA", title="MA 4 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA","VAR"], group=ma_group)
+ma4_linewidth  = input.int(1,        title="MA 4 Çizgi Kalımlığı",                                          group=ma_group)
+maLengthInput4 = input.int(100,      title="MA 4 Periyodu",                                                 group=ma_group)
 
 ma5(source_for_moving_averages, length, type) =>
     switch type
-        "WMA"     => ta.wma(source_for_moving_averages, length)
-        "EMA"     => ta.ema(source_for_moving_averages, length)
-        "SMA"     => ta.sma(source_for_moving_averages, length)
-        "VWMA"    => ta.vwma(source_for_moving_averages, length)
-        "HULL MA" => ta.wma(2*ta.wma(source_for_moving_averages, length/2)-ta.wma(source_for_moving_averages, length), math.floor(math.sqrt(length)))
+        "WMA"     => ta.wma(source_for_moving_averages,    length)
+        "EMA"     => ta.ema(source_for_moving_averages,    length)
+        "SMA"     => ta.sma(source_for_moving_averages,    length)
+        "VWMA"    => ta.vwma(source_for_moving_averages,   length)
+        "HULL MA" => f_hull_ma(source_for_moving_averages, length)
+        "VAR"     => f_var_ma(source_for_moving_averages,  length)
 
-maTypeInput5   = input.string("EMA", title="MA 5 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA"], group=ma_group)
-ma5_linewidth  = input.int(1,        title="MA 5 Çizgi Kalımlığı",                                    group=ma_group)
-maLengthInput5 = input.int(200,      title="MA 5 Periyodu",                                           group=ma_group)
+maTypeInput5   = input.string("EMA", title="MA 5 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA","VAR"], group=ma_group)
+ma5_linewidth  = input.int(1,        title="MA 5 Çizgi Kalımlığı",                                          group=ma_group)
+maLengthInput5 = input.int(200,      title="MA 5 Periyodu",                                                 group=ma_group)
 
 maline1 = ma1(source_for_moving_averages, maLengthInput1, maTypeInput1)
 maline2 = ma2(source_for_moving_averages, maLengthInput2, maTypeInput2)
