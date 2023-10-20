@@ -65,14 +65,17 @@ ichimoku_group  = "Ichimoku Ayarları"
 
 mfi_group       = "MFI Ayarları"
 cmf_group       = "CMF Ayarları"
-bb_group        = "Bollinger Bands Ayarları"
-efsun_group     = "EFSUN Ayarları"
-risotto_group   = "RISOTTO Ayarları"
-most_group      = "MOST Ayarları"
-atr_group       = "ATR Ayarları"
-wr_group        = "Williams R Ayarları"
-tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
+
 iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
+rott_group      = "ROTT Ayarları"
+efsun_group     = "EFSUN Ayarları"
+most_group      = "MOST Ayarları"
+tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
+
+bb_group        = "Bollinger Bands Ayarları"
+wr_group        = "Williams R Ayarları"
+atr_group       = "ATR Ayarları"
+
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -331,8 +334,8 @@ plot(show_atr ? (ma_function(ta.tr(true), length_atr)) : na, title = "ATR", colo
 
 // ====================================================================================================================================================================================
 
-X1 = input(30,   tooltip = "The standart value is 30")
-X2 = input(1000, title = "VAR Length", tooltip = "The standart value is 1000 \nCan be decreased / increased by step value of 100")
+X1 = input(30,   tooltip = "The standart value is 30", group = rott_group)
+X2 = input(1000, title = "VAR Length", tooltip = "The standart value is 1000 \nCan be decreased / increased by step value of 100", group = rott_group)
 
 f_var(data,u1) =>
     a = 9
@@ -376,7 +379,7 @@ bar_cond0 = ta.barssince(ta.crossover(perfect_ma2 , ott))
 bar_cond1 = ta.barssince(ta.crossover(ott , perfect_ma2))
 
 plot_rott_support = plot(show_rott ? perfect_ma2 : na, color= color.new(#31e7ff, 0),  title="SUPPORT")
-plot_rott = plot(show_rott ? ott : na,                 color= color.rgb(217, 0, 255), title="ROTT")
+plot_rott         = plot(show_rott ? ott : na,         color= color.rgb(217, 0, 255), title="ROTT")
 
 // ====================================================================================================================================================================================
 
@@ -641,4 +644,3 @@ plot(show_ma3 ? maline3 : na, title="Üçüncü MA Çizgisi",   color=color.new(
 plot(show_ma4 ? maline4 : na, title="Dördüncü MA Çizgisi", color=color.new(color.red, 0),    linewidth=ma4_linewidth)
 
 // ====================================================================================================================================================================================
-
