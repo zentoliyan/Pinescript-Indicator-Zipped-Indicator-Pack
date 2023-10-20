@@ -6,38 +6,44 @@ indicator("Sıkıştırılmış İndikatör Paketi")
 
 // ====================================================================================================================================================================================
 
-show_rsi       = input(false, title = "RSI")
-show_macd      = input(false, title = "MACD")
-show_vol       = input(false, title = "Hacim")
-show_stoch     = input(false, title = "Stokastik")
-show_stoch_rsi = input(false, title = "Stokastik RSI")
-show_adx       = input(false, title = "ADX")
-show_dmi       = input(false, title = "DMI")
-show_cci       = input(false, title = "CCI")
-show_mom       = input(false, title = "Momentum")
-show_mfi       = input(false, title = "MFI")
-show_cmf       = input(false, title = "CMF")
-show_bb        = input(false, title = "Bollinger Bands")
-show_wo        = input(false, title = "Wavetrend Oscillator")
-show_iftor     = input(false, title = "Inverse Fisher Transform on RSI")
-show_iftors    = input(false, title = "Inverse Fisher Transform on Stoch")
-show_rott      = input(false, title = "ROTT")
-show_risotto   = input(false, title = "RISOTTO")
-show_efsun     = input(false, title = "EFSUN")
-show_most      = input(false, title = "MOST")
-show_wr        = input(false, title = "Williams Yüzde Aralığı")
-show_tke       = input(false, title = "Talep Konsantrasyon Eğrisi")
-show_ma1       = input(false, title = "MA1", inline = "MA")
-show_ma2       = input(false, title = "MA2", inline = "MA")
-show_ma3       = input(false, title = "MA3", inline = "MA")
-show_ma4       = input(false, title = "MA4", inline = "MA")
-show_ma5       = input(false, title = "MA5", inline = "MA")
+group_ichimoku = "Ichimoku"
+group_custom   = "Custom İndikatörler"
+// ====================================================================================================================================================================================
+
+show_rsi        = input(false, title = "RSI")
+show_macd       = input(false, title = "MACD")
+
+show_ichimoku_1 = input(false, title = "Tenkan-Sen",                          group = group_ichimoku)
+show_ichimoku_2 = input(false, title = "Kijun-Sen",                           group = group_ichimoku)
+show_ichimoku_3 = input(false, title = "ChikouSpan",                          group = group_ichimoku)
+show_ichimoku_4 = input(false, title = "SenkouSpan A", inline = "SenkouSpan", group = group_ichimoku)
+show_ichimoku_5 = input(false, title = "SenkouSpan B", inline = "SenkouSpan", group = group_ichimoku)
+
+show_stoch      = input(false, title = "Stokastik")
+show_stoch_rsi  = input(false, title = "Stokastik RSI")
+show_adx        = input(false, title = "ADX")
+show_dmi        = input(false, title = "DMI")
+show_cci        = input(false, title = "CCI")
+show_mom        = input(false, title = "Momentum")
+show_mfi        = input(false, title = "MFI")
+show_cmf        = input(false, title = "CMF")
+show_bb         = input(false, title = "Bollinger Bands")
+show_wo         = input(false, title = "Wavetrend Oscillator")
+show_iftor      = input(false, title = "Inverse Fisher Transform on RSI")
+show_rott       = input(false, title = "ROTT")
+show_efsun      = input(false, title = "EFSUN")
+show_most       = input(false, title = "MOST")
+show_wr         = input(false, title = "Williams Yüzde Aralığı")
+show_tke        = input(false, title = "Talep Konsantrasyon Eğrisi")
+show_ma1        = input(false, title = "MA1", inline = "MA")
+show_ma2        = input(false, title = "MA2", inline = "MA")
+show_ma3        = input(false, title = "MA3", inline = "MA")
+show_ma4        = input(false, title = "MA4", inline = "MA")
 
 // ====================================================================================================================================================================================
 
 rsi_group       = "RSI Ayarları"
 macd_group      = "MACD Ayarları"
-vol_group       = "Hacim Ayarları"
 stoch_group     = "Stokastik Ayarları"
 stoch_rsi_group = "Stokastrik RSI Ayarları"
 adx_group       = "ADX Ayarları"
@@ -54,7 +60,6 @@ most_group      = "MOST Ayarları"
 wr_group        = "Williams R Ayarları"
 tke_group       = "Talep Konsantrasyon Eğrisi Ayarları"
 iftor_group     = "Inverse Fisher Transform on RSI Ayarları"
-iftors_group    = "Inverse Fisher Transform on Stoch Ayarları"
 ma_group        = "Hareketli Ortalama Ayarları"
 
 // ====================================================================================================================================================================================
@@ -136,11 +141,27 @@ plotshape(show_macd ? (signals ? sellcond==1 ? plot1 : na : na) : na, title='MAC
 
 // ====================================================================================================================================================================================
 
-volume_variable = volume
-volume_ma_input = input.int(20, title = "Volume Moving Average Period", group = vol_group)
+conversionPeriods   = input.int(9, minval=1,  title="Conversion Line Length")
+basePeriods         = input.int(26, minval=1, title="Base Line Length")
+laggingSpan2Periods = input.int(52, minval=1, title="Leading Span B Length")
+displacement        = input.int(26, minval=1, title="Lagging Span")
 
-plot(show_vol ? volume_variable: na, color = close>open ? color.new(color.green,50) : color.new(color.red,50), style = plot.style_columns)
-plot(show_vol ? ta.sma(volume_variable,volume_ma_input) : na, color = color.white)
+donchian(len)       => math.avg(ta.lowest(len), ta.highest(len))
+conversionLine      = donchian(conversionPeriods)
+baseLine            = donchian(basePeriods)
+leadLine1           = math.avg(conversionLine, baseLine)
+leadLine2           = donchian(laggingSpan2Periods)
+
+plot(show_ichimoku_1 ? conversionLine : na, color=#2962FF, title="Conversion Line")
+plot(show_ichimoku_2 ? baseLine : na, color=#B71C1C, title="Base Line")
+plot(show_ichimoku_3 ? close : na, offset = -displacement + 1, color=#43A047, title="Lagging Span")
+leading_span_a = plot(show_ichimoku_4 ? leadLine1 : na, offset = displacement - 1, color=#A5D6A7,
+	 title="Leading Span A")
+leading_span_b = plot(show_ichimoku_5 ? leadLine2 : na, offset = displacement - 1, color=#EF9A9A,
+	 title="Leading Span B")
+plot(leadLine1 > leadLine2 ? leadLine1 : leadLine2, offset = displacement - 1, title = "Kumo Cloud Upper Line", display = display.none) 
+plot(leadLine1 < leadLine2 ? leadLine1 : leadLine2, offset = displacement - 1, title = "Kumo Cloud Lower Line", display = display.none) 
+fill(leading_span_a, leading_span_b, color = leadLine1 > leadLine2 ? color.rgb(67, 160, 71, 90) : color.rgb(244, 67, 54, 90))
 
 // ====================================================================================================================================================================================
 
@@ -340,50 +361,6 @@ plot_rott = plot(show_rott ? ott : na,                 color= color.rgb(217, 0, 
 
 // ====================================================================================================================================================================================
 
-X1_risotto = input(100, title = "RSI Length",  group = risotto_group)
-X2_risotto = input(50,  title = "VAR Length",  group = risotto_group)
-X4_risotto = input(30,  title = "OTT Period",  group = risotto_group)
-X3_risotto = input(0.2, title = "OTT Percent", group = risotto_group)
-
-f_var_risotto(data,u1) =>
-    a = 9
-    b = data > data[1] ? data - data[1] : 0
-    c = data < data[1] ? data[1] - data : 0
-    d = math.sum(b , a)
-    e = math.sum(c , a)
-    f = nz((d - e) / (d + e))
-    g = math.abs(f)
-    h = 2 / (u1 + 1)
-    x = ta.sma(data , u1)
-    vidya = 0.0
-    vidya :=
-     u1==1 ? data : na(vidya[1]) ? x :
-     g * h * (data - nz(vidya[1])) + nz(vidya[1])
-
-OTT_risotto(source, length, percent) =>
-    MAVG = f_var_risotto(source, length)
-    fark = MAVG * percent * 0.01
-    longStop = MAVG - fark
-    longStopPrev = nz(longStop[1], longStop)
-    longStop := MAVG > longStopPrev ? math.max(longStop, longStopPrev) : longStop
-    shortStop = MAVG + fark
-    shortStopPrev = nz(shortStop[1], shortStop)
-    shortStop := MAVG < shortStopPrev ? math.min(shortStop, shortStopPrev) : shortStop
-    dir = 1
-    dir := nz(dir[1], dir)
-    dir := dir == -1 and MAVG > shortStopPrev ? 1 : dir == 1 and MAVG < longStopPrev ? -1 : dir
-    MT = dir == 1 ? longStop : shortStop
-    OTT = MAVG > MT ? MT * (200 + percent) / 200 : MT * (200 - percent) / 200
-    out = nz(OTT[2])
-
-plot1_risotto = f_var_risotto(ta.rsi(close,X1_risotto),X2_risotto) + 1000
-plot2_risotto = OTT_risotto(f_var_risotto(ta.rsi(close,X1_risotto),X2_risotto) + 1000 , X4_risotto, X3_risotto)
-
-plot(show_risotto ? plot1_risotto : na, color= color.new(#1fe5ff, 0),  title = "SUPPORT")
-plot(show_risotto ? plot2_risotto : na, color= color.rgb(217, 0, 255), title = "RISOTTO")
-
-// ====================================================================================================================================================================================
-
 variable1 = input(10,        title="MA Periyodu",   group=efsun_group)
 float variable2 = input(0.5, title="Takip Yüzdesi", group=efsun_group)
 ab = 2/(variable1+1)
@@ -480,18 +457,6 @@ hline(show_iftor ? -0.5 : na, color=color.green)
 
 // ====================================================================================================================================================================================
 
-stochlength_iftors = input(5, 'STOCH Length', group = iftors_group)
-wmalength_iftors   = input(9, title='Smoothing length', group = iftors_group)
-v1_iftors          = 0.1 * (ta.stoch(close, high, low, stochlength_iftors) - 50)
-v2_iftors          = ta.wma(v1_iftors, wmalength_iftors)
-INV_iftors         = (math.exp(2 * v2_iftors) - 1) / (math.exp(2 * v2_iftors) + 1)
-
-plot(show_iftors  ? INV  : na, color=color.new(color.blue, 0), linewidth=2)
-hline(show_iftors ? 0.5  : na, color=color.red)
-hline(show_iftors ? -0.5 : na, color=color.green)
-
-// ====================================================================================================================================================================================
-
 length_wr = input(title="Length", defval=14, group = wr_group)
 src_wr    = input(close, "Source", group = wr_group)
 _pr(length) =>
@@ -548,6 +513,7 @@ spacing_tke   = input(7)
 length7_tke   = input.int(7,  minval=1, group = tke_group)
 length14_tke  = input.int(14, minval=1, group = tke_group)
 length28_tke  = input.int(28, minval=1, group = tke_group)
+
 average(bp, tr_, length) =>
     math.sum(bp, length) / math.sum(tr_, length)
 high__tke = math.max(high, close[1])
@@ -645,30 +611,15 @@ maTypeInput4   = input.string("EMA", title="MA 4 Türü", options=["WMA","EMA","
 ma4_linewidth  = input.int(1,        title="MA 4 Çizgi Kalımlığı",                                          group=ma_group)
 maLengthInput4 = input.int(100,      title="MA 4 Periyodu",                                                 group=ma_group)
 
-ma5(source_for_moving_averages, length, type) =>
-    switch type
-        "WMA"     => ta.wma(source_for_moving_averages,    length)
-        "EMA"     => ta.ema(source_for_moving_averages,    length)
-        "SMA"     => ta.sma(source_for_moving_averages,    length)
-        "VWMA"    => ta.vwma(source_for_moving_averages,   length)
-        "HULL MA" => f_hull_ma(source_for_moving_averages, length)
-        "VAR"     => f_var_ma(source_for_moving_averages,  length)
-
-maTypeInput5   = input.string("EMA", title="MA 5 Türü", options=["WMA","EMA","SMA","VWMA","HULL MA","VAR"], group=ma_group)
-ma5_linewidth  = input.int(1,        title="MA 5 Çizgi Kalımlığı",                                          group=ma_group)
-maLengthInput5 = input.int(200,      title="MA 5 Periyodu",                                                 group=ma_group)
-
 maline1 = ma1(source_for_moving_averages, maLengthInput1, maTypeInput1)
 maline2 = ma2(source_for_moving_averages, maLengthInput2, maTypeInput2)
 maline3 = ma3(source_for_moving_averages, maLengthInput3, maTypeInput3)
 maline4 = ma4(source_for_moving_averages, maLengthInput4, maTypeInput4)
-maline5 = ma5(source_for_moving_averages, maLengthInput5, maTypeInput5)
 
 plot(show_ma1 ? maline1 : na, title="Birinci MA Çizgisi",  color=color.new(color.yellow, 0), linewidth=ma1_linewidth)
 plot(show_ma2 ? maline2 : na, title="İkinci MA Çizgisi",   color=color.new(color.white, 0),  linewidth=ma2_linewidth)
 plot(show_ma3 ? maline3 : na, title="Üçüncü MA Çizgisi",   color=color.new(color.blue, 0),   linewidth=ma3_linewidth)
 plot(show_ma4 ? maline4 : na, title="Dördüncü MA Çizgisi", color=color.new(color.red, 0),    linewidth=ma4_linewidth)
-plot(show_ma5 ? maline5 : na, title="Beşinci MA Çizgisi",  color=color.new(color.orange, 0), linewidth=ma1_linewidth)
 
 // ====================================================================================================================================================================================
 
