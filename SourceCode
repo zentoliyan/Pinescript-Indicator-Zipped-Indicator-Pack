@@ -6,12 +6,24 @@ indicator("Sıkıştırılmış İndikatör Paketi")
 
 // ====================================================================================================================================================================================
 
-group_ichimoku = "Ichimoku"
-group_custom   = "Custom İndikatörler"
+group_oscillator = "Osilatörler"
+group_ichimoku   = "Ichimoku"
+group_money_F    = "Para Akışı Göstergeleri"
+group_custom     = "Custom İndikatörler"
+group_others     = "Diğerleri"
+group_ma         = "Hareketli Ortalamalar"
+
 // ====================================================================================================================================================================================
 
-show_rsi        = input(false, title = "RSI")
-show_macd       = input(false, title = "MACD")
+show_rsi        = input(false, title = "RSI",                                 group = group_oscillator)
+show_macd       = input(false, title = "MACD",                                group = group_oscillator)
+show_stoch      = input(false, title = "Stokastik",                           group = group_oscillator)
+show_stoch_rsi  = input(false, title = "Stokastik RSI",                       group = group_oscillator)
+show_mom        = input(false, title = "Momentum",                            group = group_oscillator)
+show_adx        = input(false, title = "ADX",                                 group = group_oscillator)
+show_dmi        = input(false, title = "DMI",                                 group = group_oscillator)
+show_cci        = input(false, title = "CCI",                                 group = group_oscillator)
+show_wo         = input(false, title = "Wavetrend Oscillator",                group = group_oscillator)
 
 show_ichimoku_1 = input(false, title = "Tenkan-Sen",                          group = group_ichimoku)
 show_ichimoku_2 = input(false, title = "Kijun-Sen",                           group = group_ichimoku)
@@ -19,26 +31,22 @@ show_ichimoku_3 = input(false, title = "ChikouSpan",                          gr
 show_ichimoku_4 = input(false, title = "SenkouSpan A", inline = "SenkouSpan", group = group_ichimoku)
 show_ichimoku_5 = input(false, title = "SenkouSpan B", inline = "SenkouSpan", group = group_ichimoku)
 
-show_stoch      = input(false, title = "Stokastik")
-show_stoch_rsi  = input(false, title = "Stokastik RSI")
-show_adx        = input(false, title = "ADX")
-show_dmi        = input(false, title = "DMI")
-show_cci        = input(false, title = "CCI")
-show_mom        = input(false, title = "Momentum")
-show_mfi        = input(false, title = "MFI")
-show_cmf        = input(false, title = "CMF")
-show_bb         = input(false, title = "Bollinger Bands")
-show_wo         = input(false, title = "Wavetrend Oscillator")
-show_iftor      = input(false, title = "Inverse Fisher Transform on RSI")
-show_rott       = input(false, title = "ROTT")
-show_efsun      = input(false, title = "EFSUN")
-show_most       = input(false, title = "MOST")
-show_wr         = input(false, title = "Williams Yüzde Aralığı")
-show_tke        = input(false, title = "Talep Konsantrasyon Eğrisi")
-show_ma1        = input(false, title = "MA1", inline = "MA")
-show_ma2        = input(false, title = "MA2", inline = "MA")
-show_ma3        = input(false, title = "MA3", inline = "MA")
-show_ma4        = input(false, title = "MA4", inline = "MA")
+show_mfi        = input(false, title = "MFI",                                 group = group_money_F)
+show_cmf        = input(false, title = "CMF",                                 group = group_money_F)
+
+show_iftor      = input(false, title = "Inverse Fisher Transform on RSI",     group = group_custom)
+show_rott       = input(false, title = "ROTT",                                group = group_custom)
+show_efsun      = input(false, title = "EFSUN",                               group = group_custom)
+show_most       = input(false, title = "MOST",                                group = group_custom)
+show_tke        = input(false, title = "Talep Konsantrasyon Eğrisi",          group = group_custom)
+
+show_bb         = input(false, title = "Bollinger Bands",                     group = group_others)
+show_wr         = input(false, title = "Williams Yüzde Aralığı",              group = group_others)
+
+show_ma1        = input(false, title = "MA1", inline = "MA",                  group = group_ma)
+show_ma2        = input(false, title = "MA2", inline = "MA",                  group = group_ma)
+show_ma3        = input(false, title = "MA3", inline = "MA",                  group = group_ma)
+show_ma4        = input(false, title = "MA4", inline = "MA",                  group = group_ma)
 
 // ====================================================================================================================================================================================
 
